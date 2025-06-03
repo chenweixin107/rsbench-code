@@ -6,6 +6,7 @@ from . import utils, parsers, generators
 from rssgen.generators.generator import generate_dataset
 from rssgen.parsers.parser import parse_config
 
+import pdb
 
 def check_range(value):
     """Check whether the input value is between 0 and 10**4
@@ -17,11 +18,11 @@ def check_range(value):
         ArgumentTypeError
     """
     ivalue = int(value)
-    if 0 < ivalue < 10**4:
+    if 0 < ivalue < 10**5:
         return ivalue
     else:
         raise argparse.ArgumentTypeError(
-            f"Bro, you serious!? {value} is not in valid range (0, 10^4)."
+            f"Bro, you serious!? {value} is not in valid range (0, 10^5)."
         )
 
 
@@ -121,7 +122,7 @@ def get_args():
 def main(args):
     """Main function of the RSs Dataset Generation Program"""
 
-    # Create a folder if it does not exits
+    # Create a folder if it does not exist
     if not args.output_dir_path.exists():
         args.output_dir_path.mkdir(parents=True)
 

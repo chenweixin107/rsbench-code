@@ -1,6 +1,7 @@
 from rssgen.parsers.yaml_parser import YamlParser
 from rssgen.parsers.constraints import greater_than_zero, between_zero_one, len_not_zero
 
+import pdb
 
 class XORParser(YamlParser):
     """MNIST Logic parser"""

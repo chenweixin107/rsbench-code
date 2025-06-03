@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 
+import pdb
 
 class SyntheticXORGenerator(GenericSyntheticDatasetGenerator):
     """Mnist logic generator"""
@@ -21,7 +22,7 @@ class SyntheticXORGenerator(GenericSyntheticDatasetGenerator):
         symbols,
         ood_prop,
         use_mnist=True,
-        mnist_path="data/MNIST/raw",
+        mnist_path="/home/jovyan/workspace/datasets/MNIST/raw",
         **kwargs
     ):
         super().__init__(output_path, val_prop, test_prop, ood_prop)

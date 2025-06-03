@@ -1,3 +1,5 @@
+import pdb
+
 from rssgen.generators.dataset_generator import GenericSyntheticDatasetGenerator
 from rssgen.generators.utils import get_exp
 
@@ -190,8 +192,11 @@ class SyntheticKandinksyGenerator(GenericSyntheticDatasetGenerator):
             cx = random.randint(MAXSIZE / 2, WIDTH - MAXSIZE / 2)
             cy = random.randint(MAXSIZE / 2, WIDTH - MAXSIZE / 2)
             size = random.randint(MINSIZE, MAXSIZE)
-            col = world_to_generate[idx][j]
-            sha = world_to_generate[idx][j + 1]
+            # col = world_to_generate[idx][j]
+            # sha = world_to_generate[idx][j + 1]
+            # New
+            sha = world_to_generate[idx][j]
+            col = world_to_generate[idx][j + 1]
             shape = {
                 "shape_fun": self._get_shape(sha),
                 "shape": sha,
@@ -279,13 +284,21 @@ class SyntheticKandinksyGenerator(GenericSyntheticDatasetGenerator):
                 combinations_in_distribution, return_tuple=False
             )
 
-        random_samples = random.choices(
-            single_figure_combinations,
-            k=(self.sample_size * self.n_figures) - to_remove,
-        )
+        # random_samples = random.choices(
+        #     single_figure_combinations,
+        #     k=(self.sample_size * self.n_figures) - to_remove,
+        # )
+        # New:
+        random_samples = single_figure_combinations
+
+        # combinations = [
+        #     random_samples[i : i + self.n_shapes]
+        #     for i in range(0, len(random_samples), self.n_shapes)
+        # ]
+        # New:
         combinations = [
-            random_samples[i : i + self.n_shapes]
-            for i in range(0, len(random_samples), self.n_shapes)
+            random_samples[i: i + self.n_figures]
+            for i in range(0, len(random_samples), self.n_figures)
         ]
 
         # filtering before combinations_in_distribution
@@ -365,8 +378,11 @@ class SyntheticKandinksyGenerator(GenericSyntheticDatasetGenerator):
         vector = list(vector)
         log("debug", "changed vector in list", vector)
         for i in range(0, len(vector), 2):
-            vector[i] = self.map_color_to_integer(vector[i])
-            vector[i + 1] = self.map_shape_to_integer(vector[i + 1])
+            # vector[i] = self.map_color_to_integer(vector[i])
+            # vector[i + 1] = self.map_shape_to_integer(vector[i + 1])
+            # New
+            vector[i] = self.map_shape_to_integer(vector[i])
+            vector[i + 1] = self.map_color_to_integer(vector[i + 1])
         log("debug", "changed vector in integer", vector)
         return tuple(vector)
 
@@ -386,7 +402,8 @@ class SyntheticKandinksyGenerator(GenericSyntheticDatasetGenerator):
 
     def _all_combinations(self, colors, shapes, n_objects):
         """Get all combinations"""
-        all_comb_in_a_figure = list(product(colors, shapes, repeat=n_objects))
+        # all_comb_in_a_figure = list(product(colors, shapes, repeat=n_objects))
+        all_comb_in_a_figure = list(product(shapes, colors, repeat=n_objects)) # New
         return all_comb_in_a_figure
 
     def handle_given_combinations(self, combinations):
@@ -404,10 +421,16 @@ class SyntheticKandinksyGenerator(GenericSyntheticDatasetGenerator):
 
             log("info", "obtained world is", words)
 
+            # if (
+            #     len(words) == 2
+            #     and words[0] in self.kandinsky_colors
+            #     and words[1] in self.kandinsky_named_shapes
+            # ):
+            # New
             if (
-                len(words) == 2
-                and words[0] in self.kandinsky_colors
-                and words[1] in self.kandinsky_named_shapes
+                    len(words) == 2
+                    and words[0] in self.kandinsky_named_shapes
+                    and words[1] in self.kandinsky_colors
             ):
                 result_per_figure.extend(words)
             else:
@@ -473,7 +496,7 @@ if __name__ == "__main__":
     print("Aggregating logical expression: ", aggregator_exp)
 
     generator = SyntheticKandinksyGenerator(
-        output_path="../../data/synthetic_kandinksy",
+        output_path="/home/jovyan/workspace/datasets/KandLogic",
         val_prop=0.2,
         test_prop=0.3,
         n_shapes=3,

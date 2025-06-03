@@ -1,0 +1,26 @@
+val_prop: 0.2
+test_prop: 0.3
+n_shapes: 3
+n_figures: 1
+ood_prop: 0.0
+colors:
+  - red
+  - yellow
+  - blue
+shapes:
+  - circle
+  - square
+  - triangle
+prop_in_distribution: 1.0
+symbols:
+  - shape_1
+  - color_1
+  - shape_2
+  - color_2
+  - shape_3
+  - color_3
+logic: (Ne(shape_1, shape_2) | Eq(color_1, color_2)) & (Ne(shape_1, shape_3) | Eq(color_1, color_3)) & (Ne(shape_2, shape_3) | Eq(color_2, color_3))
+aggregator_symbols:
+  - pattern_1
+sample_size: 1000
+aggregator_logic: pattern_1

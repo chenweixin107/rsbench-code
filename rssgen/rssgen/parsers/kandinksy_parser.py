@@ -30,7 +30,7 @@ class KandinksyParser(YamlParser):
             "sample_size": int,
         }
         self.constraints = {
-            "n_figures": greater_than_one,
+            "n_figures": greater_than_zero, # NEW: changed from greater_than_one
             "n_shapes": greater_than_zero,
             "colors": len_not_zero,
             "shapes": len_not_zero,
@@ -52,10 +52,11 @@ class KandinksyParser(YamlParser):
         if len(data["symbols"]) > data["n_shapes"] * 2:
             raise ValueError("Cannot have more symbols than shapes per figure!")
 
-        if len(data["symbols"]) > (len(data["shapes"]) + len(data["colors"])):
-            raise ValueError(
-                "Cannot have more symbols than shapes and colors in the figure!"
-            )
+        # NEW
+        # if len(data["symbols"]) > (len(data["shapes"]) + len(data["colors"])):
+        #     raise ValueError(
+        #         "Cannot have more symbols than shapes and colors in the figure!"
+        #     )
 
         if len(data["aggregator_symbols"]) > data["n_figures"]:
             raise ValueError("Cannot have more aggregating symbols than figures!")

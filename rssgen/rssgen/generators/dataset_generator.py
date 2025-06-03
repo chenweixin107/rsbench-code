@@ -1,4 +1,6 @@
 import os
+import pdb
+
 import matplotlib.pyplot as plt
 import joblib
 from tqdm import tqdm
@@ -192,7 +194,7 @@ class GenericSyntheticDatasetGenerator:
                 negative_to_sample = negative_ood
 
             # count of samples to generate
-            total_positive_samples = train_size // 2
+            total_positive_samples = dataset_size // 2
 
             log(
                 "info",
@@ -204,7 +206,7 @@ class GenericSyntheticDatasetGenerator:
                 len(positive_to_sample),
                 "positive combinations to sample",
                 "and",
-                train_size - total_positive_samples,
+                dataset_size - total_positive_samples,
                 "negative samples of",
                 len(negative_to_sample),
                 "negative combinations to sample",

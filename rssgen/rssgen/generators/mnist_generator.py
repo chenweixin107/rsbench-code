@@ -12,6 +12,7 @@ import re
 
 from itertools import product, islice
 
+import pdb
 
 class SyntheticMNISTGenerator(GenericSyntheticDatasetGenerator):
     """Mnist Math generator"""
@@ -27,7 +28,8 @@ class SyntheticMNISTGenerator(GenericSyntheticDatasetGenerator):
         symbols,
         multiple_labels,
         ood_prop,
-        mnist_path="data/MNIST/raw",
+        digit_len, ## New: Define digit_len, i.e., how many digits compose one number
+        mnist_path="/home/jovyan/workspace/datasets/MNIST/raw",
         **kwargs,
     ):
         super().__init__(output_path, val_prop, test_prop, ood_prop)
@@ -63,6 +65,9 @@ class SyntheticMNISTGenerator(GenericSyntheticDatasetGenerator):
 
         self.train_filtered_dictionary = {}
         self.test_filtered_dictionary = {}
+
+        ## New: Define digit_len, i.e., how many digits compose one number
+        self.digit_len = digit_len
 
     def positive_combinations(self, combinations_in_distribution=None):
         """Take first half of all possible combinations"""
@@ -154,28 +159,45 @@ class SyntheticMNISTGenerator(GenericSyntheticDatasetGenerator):
             c_list = []
             # loop over the number of digits required
             for j in range(self.num_digits):
-                # select random digit
-                idx = np.random.randint(0, len(mnist_images))
-                digit = mnist_images[idx]
-                a_concept = mnist_labels[idx]
+                # # select random digit
+                # idx = np.random.randint(0, len(mnist_images))
+                # digit = mnist_images[idx]
+                # a_concept = mnist_labels[idx]
+                #
+                # # if the world is passed, then override the random digit
+                # if world_to_generate is not None:
+                #     digit, a_concept = self.get_random_specific_mnist_digit(
+                #         train_name,
+                #         mnist_images,
+                #         mnist_labels,
+                #         world_to_generate[t * self.n_equations + j],
+                #     )
+                #
+                # # save digit and concept
+                # digit = np.array(digit).reshape(28, 28)
+                # c_list.append(a_concept)
+                #
+                # if background is None:
+                #     background = digit
+                # else:
+                #     background = np.concatenate((background, digit), axis=1)
 
-                # if the world is passed, then override the random digit
-                if world_to_generate is not None:
-                    digit, a_concept = self.get_random_specific_mnist_digit(
-                        train_name,
-                        mnist_images,
-                        mnist_labels,
-                        world_to_generate[t * self.n_equations + j],
-                    )
+                ## New: At each loop, we randomly select 3 digits to compose 1 number
+                # select random digit
+                idxs = np.random.randint(0, len(mnist_images), self.digit_len)
+                digits = mnist_images[idxs]
+                a_concepts = mnist_labels[idxs]
 
                 # save digit and concept
-                digit = np.array(digit).reshape(28, 28)
+                reshaped_digits = [np.array(digits[i]).reshape(28, 28) for i in range(self.digit_len)]
+                digit = np.concatenate(reshaped_digits, axis=1)  # same as hstack
+                a_concept = int(''.join(map(str, a_concepts)))
                 c_list.append(a_concept)
 
                 if background is None:
                     background = digit
                 else:
-                    background = np.concatenate((background, digit), axis=1)
+                    background = np.concatenate((background, digit), axis=0)
 
             # to distinguish between mnist math and mnist add
             if self.mnist_math:
@@ -213,7 +235,9 @@ class SyntheticMNISTGenerator(GenericSyntheticDatasetGenerator):
         if not os.path.exists(self.mnist_path):
             os.makedirs(self.mnist_path, exist_ok=True)
 
-            base_url = "http://yann.lecun.com/exdb/mnist/"
+            # base_url = "http://yann.lecun.com/exdb/mnist/"
+            base_url = "https://ossci-datasets.s3.amazonaws.com/mnist/"
+
             files = [
                 "train-images-idx3-ubyte.gz",
                 "train-labels-idx1-ubyte.gz",
@@ -274,3 +298,30 @@ if __name__ == "__main__":
     plt.imshow(synthetic_image["image"], cmap=synthetic_image["color"])
     plt.savefig("minst.png")
     plt.close()
+
+    # symbols = ["a", "b"]
+    # logic_expression = "a + b"
+    # exp = get_exp(symbols, logic_expression)
+    # print("Logical expression: ", exp)
+    #
+    # # set backend
+    # matplotlib.use("qtagg")
+    #
+    # generator = SyntheticMNISTGenerator(
+    #     output_path="/home/jovyan/workspace/datasets/MNMath",
+    #     val_prop=0.2,
+    #     test_prop=0.3,
+    #     num_digits=2,
+    #     # digits=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    #     logic=exp,
+    #     symbols=symbols,
+    #     mnist_path="/home/jovyan/workspace/datasets/MNIST/raw",
+    #     digit_values=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    #     multiple_labels=False,
+    #     ood_prop=0.0,
+    # )
+    # synthetic_image, label, meta = generator.generate_synthetic_data()
+    # print("Label", label, "Meta", meta)
+    # plt.imshow(synthetic_image["image"], cmap=synthetic_image["color"])
+    # plt.savefig("minst.png")
+    # plt.close()

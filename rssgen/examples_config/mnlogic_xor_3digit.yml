@@ -1,17 +1,15 @@
 n_digits: 3
 val_prop: 0.2
 test_prop: 0.3
-ood_prop: 0.3
-prop_in_distribution: 0.8
-combinations_in_distribution:
-  - "001"
-  - "010"
-  - "000"
-xor_rule: False
+ood_prop: 0.0
+prop_in_distribution: 1.0
+xor_rule: True
 symbols:
   - a
   - b
   - c
+  - d
+  - e
 logic: Or(And(a, b), Not(c))
 use_mnist: True
 mnist_path: /home/jovyan/workspace/datasets/MNIST/raw

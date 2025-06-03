@@ -15,8 +15,9 @@ import re
 import multiprocessing as mp
 
 sys.path.append("../..")
-sys.path.append("/home/x/rss/rss-dataset-gen/rssgen/clevr/")
-sys.path.insert(0, "/home/x/rss/rss-dataset-gen/venv/rss/lib/python3.7/site-packages")
+sys.path.append("/home/jovyan/workspace/rsbench-code/rssgen/rssgen/clevr/")
+sys.path.insert(0, "/opt/saturncloud/envs/rs/lib/python3.7/site-packages")
+
 
 from rssgen.utils import log, set_log_level
 from rssgen.parsers import clever_parser
