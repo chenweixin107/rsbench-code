@@ -1,0 +1,19 @@
+val_prop: 0.2
+test_prop: 0.3
+ood_prop: 0.0
+prop_in_distribution: 1.0
+n_samples: 10
+symbols:
+  - color_1
+  - shape_1
+  - material_1
+  - size_1
+  - color_2
+  - shape_2
+  - material_2
+  - size_2
+  - color_3
+  - shape_3
+  - material_3
+  - size_3
+logic: (Ne(shape_1, shape_2) | Eq(color_1, color_2)) & (Ne(shape_1, shape_3) | Eq(color_1, color_3)) & (Ne(shape_2, shape_3) | Eq(color_2, color_3))

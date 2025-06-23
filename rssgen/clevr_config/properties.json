@@ -1,27 +1,23 @@
 {
   "shapes": {
+      "cone": "Cone",
       "cube": "SmoothCube_v2",
-      "star": "Star",
+      "cylinder": "SmoothCylinder",
+      "sphere": "Sphere",
       "toroid": "Toroid"
   },
   "colors": {
-      "red": [
-          173,
-          35,
-          35
-      ],
-      "blue": [
-          42,
-          75,
-          215
-      ]
+    "blue": [42, 75, 215],
+    "cyan": [41, 208, 208],
+    "green": [29, 105, 20],
+    "red": [173, 35, 35],
+    "yellow": [255, 238, 51]
   },
   "materials": {
       "rubber": "Rubber",
       "metal": "MyMetal"
   },
   "sizes": {
-      "large": 0.7,
       "medium": 0.5,
       "small": 0.3
   }

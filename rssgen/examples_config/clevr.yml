@@ -1,8 +1,8 @@
 val_prop: 0.2
 test_prop: 0.3
-ood_prop: 0.3
-prop_in_distribution: 0.8
-n_samples: 20
+ood_prop: 0.0
+prop_in_distribution: 1.0
+n_samples: 5
 symbols:
   - color_1
   - shape_1
@@ -15,6 +15,5 @@ symbols:
 logic: |
   And(
     Eq(color_1, color_2),
-    Eq(shape_1, shape_2),
-    Eq(material_1, material_2)
+    Eq(shape_1, shape_2)
   )

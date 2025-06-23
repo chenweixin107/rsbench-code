@@ -9,20 +9,22 @@ from __future__ import print_function
 import math, sys, random, argparse, json, os, tempfile
 from datetime import datetime as dt
 from collections import Counter
-import numpy as np
-from itertools import product
-import re
-import multiprocessing as mp
 
 sys.path.append("../..")
 sys.path.append("/home/jovyan/workspace/rsbench-code/rssgen/rssgen/clevr/")
 sys.path.insert(0, "/opt/saturncloud/envs/rs/lib/python3.7/site-packages")
 
+import numpy as np
+from itertools import product
+import re
+import multiprocessing as mp
 
 from rssgen.utils import log, set_log_level
 from rssgen.parsers import clever_parser
 import sympy as sp
 from clevr_utils import stdout_redirected
+
+import pdb
 
 """
 Renders random scenes using Blender, each with with a random number of objects;
@@ -281,7 +283,7 @@ def configure_parser(parser) -> None:
     # Rendering options
     parser.add_argument(
         "--use_gpu",
-        default=1,
+        default=0,
         type=int,
         help="Setting --use_gpu 1 enables GPU-accelerated rendering using CUDA. "
         + "You must have an NVIDIA GPU with the CUDA toolkit installed for "
@@ -360,7 +362,7 @@ def configure_parser(parser) -> None:
     )
     parser.add_argument(
         "--num_parallel_threads",
-        default=4,
+        default=1,
         type=int,
         help="The number of threads to be run in parallel to generate the images",
     )
@@ -791,7 +793,6 @@ def generate_world(
     world_to_generate=None,
 ):
     """Generate world in blender"""
-
     label = None
     concepts = None
     world_to_generate = None
@@ -1016,6 +1017,8 @@ def generate_proportionate_dataset(
             [train_size, val_size, test_size, ood_size],
         )
     ):
+        if name != "train":
+            continue
         log("info", "Doing", name, "with", dataset_size, "examples...")
 
         # positive and negative worlds to sample
@@ -1049,6 +1052,10 @@ def generate_proportionate_dataset(
 
         scenes_paths = []
         for i in range(dataset_size):
+            ### New
+            if (i + args.start_idx) in args.saved_indexes:
+                continue
+
             scenes_paths.append(
                 generate_world(
                     i,
@@ -1171,6 +1178,13 @@ def render_scene(
 
     # Load the main blendfile
     bpy.ops.wm.open_mainfile(filepath=args.base_scene_blendfile)
+    # if output_index % 10 == 0:
+    #     bpy.ops.wm.open_mainfile(filepath=args.base_scene_blendfile)
+    # else:
+    #     # Manually delete all objects except Camera, Lights, Ground
+    #     for obj in list(bpy.data.objects):
+    #         if obj.name not in {"Area", "Camera", "Empty", "Lamp_Key", "Lamp_Fill", "Lamp_Back", "Ground"}:
+    #             bpy.data.objects.remove(obj, do_unlink=True)
 
     # Load materials
     clevr_utils.load_materials(args.material_dir)
@@ -1730,6 +1744,19 @@ def main():
     if INSIDE_BLENDER:
         argv = clevr_utils.extract_args()
         args = parser.parse_args(argv)
+
+        ### NEW: Check which images haven't been generated
+        folder_path = "/home/jovyan/workspace/rsbench-code/rssgen/out/clevr_images/train"
+        filenames = os.listdir(folder_path)
+        indexes = set()
+        pattern = re.compile(r'CLEVR_train_(\d{6})\.png')
+        for name in filenames:
+            match = pattern.match(name)
+            if match:
+                indexes.add(int(match.group(1)))  # convert to int if you want sorted numeric order
+        args.saved_indexes = indexes
+        print(f"Saved indexes: {args.saved_indexes}")
+        ###
 
         # set seed
         set_random_seed(args.seed)
